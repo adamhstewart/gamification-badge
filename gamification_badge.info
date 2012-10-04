@@ -1,0 +1,6 @@
+name = Gamification Badge
+description = "Achievements badge for Gamification."
+files[] = gamification_badges.rules.inc
+package = Achievements
+core = 7.x
+

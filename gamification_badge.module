@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implements hook_achievements_info().
+ */
+function gamification_badge_achievements_info() {
+  $achievements = array(
+    'challenge-1' => array(
+     'title' => t('Completed Challenge 1'),
+     'description' => t("You know know how to create a comment. Now what?"),
+     'storage' => 'gamification-badge',
+     'points' => 10,
+   ),
+    'challenge-2' => array(
+     'title' => t('Completed Challenge 2'),
+     'description' => t('But what about the children?!'),
+     'storage' => 'gamification-badge',
+   'points' => 10,
+    ),
+  );
+
+  return $achievements;
+}
+
+/**
+* Implements hook_comment_insert().
+*/
+function gamification_badge_comment_insert($comment) {
+  if ($comment->nid == '2') { 
+    achievements_unlocked('challenge-1', $comment->uid);
+    drupal_set_message ('You unlocked challenge #1');
+  }
+}
+
+function gamification_badge_achievements_unlocked($achievement, $uid) {
+  if ($uid != 0) {
+    $title = $achievement['title'];
+    rules_invoke_event('achievements_unlocked_event', $title, $uid);
+  }
+}
