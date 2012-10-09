@@ -5,32 +5,43 @@
  */
 function gamification_badge_achievements_info() {
   $achievements = array(
-    'challenge-1' => array(
-     'title' => t('Completed Challenge 1'),
-     'description' => t("You know know how to create a comment. Now what?"),
-     'storage' => 'gamification-badge',
-     'points' => 10,
-   ),
-    'challenge-2' => array(
-     'title' => t('Completed Challenge 2'),
-     'description' => t('But what about the children?!'),
-     'storage' => 'gamification-badge',
-   'points' => 10,
+    'gamification-badge' => array(
+      'title' => t('Gamification Badge'),
+      'achievements' => array(
+        'quest-1' => array(
+         'title' => t('Gamification Badge: Quest #1'),
+         'description' => t("Games are Everywhere"),
+         'storage' => 'gamification-badge',
+         'points' => 10,
+        ),
+        'quest-2' => array(
+          'title' => t('Gamification Badge: Quest #2'),
+          'description' => t('Gamification Defined'),
+          'storage' => 'gamification-badge',
+          'points' => 10,
+        ),
+        'quest-3' => array(
+          'title' => t('Gamification Badge: Quest #3'),
+          'description' => t('Games in Parctice'),
+          'storage' => 'gamification-badge',
+          'points' => 10,
+        ),
+        'badge' => array(
+          'title' => t('Gamification Badge'),
+          'description' => t('All Quests Complete'),
+          'storage' => 'gamification-badge',
+          'points' => 30,
+        )
+      ),
     ),
   );
-
   return $achievements;
 }
 
 /**
-* Implements hook_comment_insert().
+* Create Rules Event().
 */
-function gamification_badge_comment_insert($comment) {
-  if ($comment->nid == '2') { 
-    achievements_unlocked('challenge-1', $comment->uid);
-    drupal_set_message ('You unlocked challenge #1');
-  }
-}
+
 
 function gamification_badge_achievements_unlocked($achievement, $uid) {
   if ($uid != 0) {
@@ -38,3 +49,394 @@ function gamification_badge_achievements_unlocked($achievement, $uid) {
     rules_invoke_event('achievements_unlocked_event', $title, $uid);
   }
 }
+
+/**
+ * Implements hook_menu().
+ */
+function gamification_badge_menu() {
+   $items = array (
+    'badge/gamification' => array(
+      'title' => 'Gamification Badge',
+      'description' => 'Page for Gamification Badge.',
+      'page callback' => 'gamification_badge_page',
+      'access callback' => TRUE,
+    ),
+    
+    'badge/gamification/quest-1' => array(
+      'title' => 'Gamification Badge: Quest #1',
+      'description' => 'Page for Gamification Badge: Quest #1.',
+      'page callback' => 'gamification_badge_quest1_page',
+      'access callback' => TRUE,
+    ), 
+
+    'badge/gamification/quest-2' => array(
+      'title' => 'Gamification Badge: Quest #2',
+      'description' => 'Page for Gamification Badge: Quest #2.',
+      'page callback' => 'gamification_badge_quest2_page',
+      'access callback' => TRUE,
+    ),
+    
+    'badge/gamification/quest-3' => array(
+      'title' => 'Gamification Badge: Quest #3',
+      'description' => 'Page for Gamification Badge: Quest #3.',
+      'page callback' => 'gamification_badge_quest3_page',
+      'access callback' => TRUE,
+    ),
+  );
+  
+  return $items;
+}
+
+/**
+ * Creating the page(s) content.
+ */
+
+function gamification_badge_page() {   
+  $output =  array(
+    'introduction' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . t('In order to earn this badge you will need to be
+        able to answer the question: &ldquo;How can I use gamification to
+        engage stakeholders in my organization?&rdquo; To develop the knowledge
+        needed to answer this question, you will participate in three learning
+        quests. Each quest will take approximately 10 minutes to complete.
+        They each contain an instructional video, a quizette, and a challenge.
+        When you have achieved all 3 quests, you will have the opportunity to
+        solve the problem of practice and earn your badge.') . '</p>',
+    ),
+    'embedded_video' => array(
+      '#type' => 'markup',
+      '#markup' =>'<iframe width="560" height="315"
+      src="http://www.youtube.com/embed/dE1DuBesGYM"
+      frameborder="0" allowfullscreen></iframe>'
+    ),    
+  'quest_list' => array(
+      '#items' => array(
+        l('QUEST 1: Games are everywhere', 'badge/gamification/quest-1'),
+        l('QUEST 2: Gamification defined', 'badge/gamification/quest-2'),
+        l('QUEST 3: Games in practice', 'badge/gamification/quest-3'),
+      ),
+      '#attributes' => array(
+        'class' => 'quest-list',
+        ),
+      '#theme' => 'item_list',
+    ),
+
+/* TODO    
+    'quest_list' => array(
+      '#items' => array(
+        'QUEST 1: Games are everywhere',
+        'QUEST 2: Gamification defined',
+        'QUEST 3: Games in practice',
+      ),
+      '#theme' => 'item_list',
+    ),
+      */
+  );
+    
+  return $output;
+}
+
+
+function gamification_badge_quest1_page() {
+  global $user;
+  
+  $build = array(
+    'subhead' => array(
+      '#type' => 'markup',
+      '#markup' => '<h2 class="quest-subtitle">' . t('Games are Everywhere') . '</h2>',
+    ),
+
+    //display message if quest is already unlocked
+    'display_message' => array (
+      '#type' => 'markup',
+      '#markup' => achievements_unlocked_already('quest-1', $user->uid) ?
+        '<div class ="messages warning">' . t('You have laready completed this quest.
+          You may visit the quest again, but your answers will not count toward the
+          badge') . '</div>':NULL,
+    ),
+    'header_text' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . t('In this quiz, you will watch a video about
+        gamification and answer some questions.') . '</p>',
+    ),
+    'embedded_video' => array(
+      '#type' => 'markup',
+      '#markup' =>'<iframe width="560" height="315"
+        src="http://www.youtube.com/embed/1AJpKt6UP08?rel=0"
+        frameborder="0" allowfullscreen></iframe>'
+    ),  
+  'display_form' => drupal_get_form('gamification_badge_quest1_form'),
+  );
+     return $build;
+}
+
+function gamification_badge_quest2_page() {
+  global $user;
+
+   $build = array(
+    'subhead' => array(
+      '#type' => 'markup',
+      '#markup' => '<h2 class="quest-subtitle">' . t('Gamification Defined') . '</h2>',
+    ),
+    //display message if quest is already unlocked
+    'display_message' => array (
+      '#type' => 'markup',
+      '#markup' => achievements_unlocked_already('quest-2', $user->uid) ?
+        '<div class ="messages warning">' . t('You have laready completed this quest.
+          You may visit the quest again, but your answers will not count toward the
+          badge') . '</div>':NULL,
+    ),
+    'header_text' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . t('This is sample text for Gamification Badge:
+        Quest #2.') . '</p>
+        <p>' . t('We will replace it later.') . '</p>',
+    ),
+  'display_form' => drupal_get_form('gamification_badge_quest2_form'),
+  );
+     return $build;
+}
+
+function gamification_badge_quest3_page() {
+  
+  module_load_include('inc', 'node', 'node.pages');
+  
+  global $user;
+  $node = (object) array(
+    'uid' => $user->uid,
+    'name' => (isset($user->name) ? $user->name : ''),
+    'type' => 'resource',
+    'language' => LANGUAGE_NONE,
+  );
+ 
+  $build = array(
+    'subhead' => array(
+      '#type' => 'markup',
+      '#markup' => '<h2 class="quest-subtitle">' . t('Games in practice') . '</h2>',
+    ),
+    'header_text' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . t('Find at least one example of how gamification
+        principles are being applied in another organization. Describe how
+        they are using it in a sentence or two. If possible, include a link
+        to the website so we can all see it in action!') . '</p>
+        <p>' . t('Your response will be submitted to the ') .
+          '<a href="/resource-library">' . t('Resource Library') .
+          '</a>' . t('.') . '</p>',
+    ),
+    'display_form' => drupal_get_form('resource_node_form', $node),
+  );
+  return $build;
+}
+
+/**
+ * Implementation of hook_form_alter()
+ */
+
+
+function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'resource_node_form') {
+    $form['actions']['submit']['#submit'][] = 'gamification_badge_resource_node_form_finish_redirect';
+  }
+}
+
+function gamification_badge_resource_node_form_finish_redirect($form, &$form_state) {
+  global $user;
+  
+  //even though acheivement_unlocks checks, we need to check so that
+  //storage is not invoked
+  if (!achievements_unlocked_already('quest-3', $user->uid)) {
+    //assign the badge-specific points
+    $current_count = achievements_storage_get('gamification-badge', $user->uid) + 10;
+    achievements_storage_set('gamification-badge', $current_count, $user->uid);
+    
+    achievements_unlocked('quest-3', $user->uid); //unlock the achivement
+  }
+  $form_state['redirect'] = 'badge/gamification';
+  } 
+
+function gamification_badge_quest1_form($form, $form_state) {
+  $form = array();
+
+  $form['question-1'] = array(
+    '#type' => 'radios',
+    '#title' => t('Nike+ is an example of gamification because:'),
+    '#options' => array(
+      'option1' => t('Running is fun.'),
+      'option2' => t('It employs elements such as virtual trophies to encourage users to run.'),
+      'option3' => t('Instead of running outside, you play a video game about running inside.'),
+      'option4' => t('There is always a winner.'),
+    ),
+    '#description' => t('Select the most appropriate answer.'),
+    '#required' => TRUE,
+  );
+
+    $form['question-2'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Which business process do you most want to improve (select all that apply)'),
+    '#options' => array(
+      'option1' => t('Lead generation & qualification.'),
+      'option2' => t('New business selling.'),
+      'option3' => t('Selling to existing customers (renewing, upselling).'),
+      'option4' => t('Team selling & collaboration.'),
+      'option5' => t('Social selling.'),
+    ),
+    '#description' => t('Select all that apply.'),
+    '#required' => TRUE,
+  );
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit Your Responses'),
+  );
+
+  return $form;
+}
+
+function gamification_badge_quest1_form_submit($form, &$form_state) {
+  global $user;
+  
+  //even though acheivement_unlocks checks, we need to check so that
+  //storage is not invoked
+  if (!achievements_unlocked_already('quest-1', $user->uid)) {
+    //assign the badge-specific points
+    $current_count = achievements_storage_get('gamification-badge', $user->uid) + 10;
+    achievements_storage_set('gamification-badge', $current_count, $user->uid);
+    
+    achievements_unlocked('quest-1', $user->uid); //unlock the achivement
+  }
+    
+  $form_state['redirect'] = 'badge/gamification';
+}
+
+function gamification_badge_quest2_form($form, $form_state) {
+  $form = array();
+
+  $form['question-1'] = array(
+    '#type' => 'textarea',
+    '#title' => t('What questions does this explanation raise for you? Pose at least 1 question to our expert. '),
+    '#description' => t('Your question will be answered by one of our gamification experts'),
+    '#required' => TRUE,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit Your Question'),
+  );
+  
+    return $form;
+}
+
+function gamification_badge_quest2_form_submit($form, &$form_state) {
+  global $user;
+  
+  //even though acheivement_unlocks checks, we need to check so that
+  //storage is not invoked
+  if (!achievements_unlocked_already('quest-2', $user->uid)) {
+    //assign the badge-specific points
+    $current_count = achievements_storage_get('gamification-badge', $user->uid) + 10;
+    achievements_storage_set('gamification-badge', $current_count, $user->uid);
+    
+    achievements_unlocked('quest-2', $user->uid); //unlock the achivement
+  }
+    
+  $form_state['redirect'] = 'badge/gamification';
+}
+
+/**
+ * Implementation of hook_block_info()
+ */
+
+function gamification_badge_block_info() {
+  $blocks = array();
+  $blocks['gamification'] = array(
+    'info' => t('Gamification Badge Progress Bar'),
+    'cache' => DRUPAL_NO_CACHE, //This changes a lot so no cache
+    );
+
+  return $blocks;
+}
+
+
+/**
+ * Implementation of hook_block_view()
+ */
+
+function gamification_badge_block_view($delta = '') {  
+  switch ($delta) {
+    case 'gamification':
+      $block['subject'] = t('Gamification Badge Progress Bar');
+
+      //collect all settings we need to pass to the theme function
+      global $user;
+      $storage = achievements_storage_get('gamification-badge', $user->uid); //gets users points
+
+      $block['content'] = theme('gamification_badge_progress_content', array(
+        'points' => $storage,
+        'size' => '175',
+        'unit' => 'Points',
+        'max_points' => '30',
+        'unit_divisor' => '1',
+        )
+      );
+      
+  return $block;
+  }
+}
+
+/**
+ * Implementation of hook theme()
+ */
+
+function gamification_badge_theme() {
+  return array(
+    'gamification_badge_progress_content' => array(
+      'variable' => array(
+        'points' => NULL,
+        'size' => NULL,
+        'unit' => NULL,
+        'max_points' => NULL,
+        'unit_divisior' => NULL,
+      ),
+    ),
+  );
+}
+
+/**
+ * Theming function for theming the block
+ */
+
+function theme_gamification_badge_progress_content($variables) {
+
+  //get all settings
+  $points = $variables['points'];
+  $max_points = $variables['max_points'];
+  $size = $variables['size'];
+  $unit = $variables['unit'];
+  $unit_divisor = $variables['unit_divisor'];
+
+  $module_path = drupal_get_path('module', 'gamification_badge');
+  $full_path = $module_path . '/gamification_badge.css';
+  drupal_add_css($full_path);
+
+  //calculate width of green meter bar
+  //simple "Cross-multiplicastion" -> http://en.wikipedia.org/wiki/Cross-multiplication
+  $width = round(((($points * 100) / $max_points) * $size) / 100);
+
+  //rewrite points/max points with the unit divisor
+  if ($unit_divisor > 1) {
+    $points = round(($points / $unit_divisor), 2);
+    $max_points = round(($max_points / $unit_divisor), 2);
+  }
+
+  $id = 'meter_bar';
+
+  $output = '<div class="achievements-progress-bar" id=' . $id . ' style="width:' . $size . 'px;">
+                <span class="points-text" style="width:' . $size . 'px;">' . $points . ' ' . $unit . ' /' . $max_points . ' ' . $unit . '</span>
+                <div class="points-left-wrapper"  style="width:' . $width . 'px;"><div class="points-left"></div></div>
+            </div>';
+
+  return $output;
+}
+

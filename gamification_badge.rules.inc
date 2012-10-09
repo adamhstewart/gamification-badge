@@ -14,3 +14,23 @@ function gamification_badge_rules_event_info() {
     ),
   );
 }
+
+/**
+* Implementation of hook_rules_condition_info().
+
+function gamification_badge_rules_condition_info() {
+  return array(
+    'achievements_unlocked_condition' => array(
+      'group' => t('Achievement'),
+      'label' => t('The achievement that was unlocked'),
+      'variables' => array(
+         'achievements_unlocked' => array(
+          'type' => 'achievements_unlocked',
+          'label' => t('Achievement Unlocked'),
+          ),
+      ),
+      'module' => 'gamification_badge',
+    ),
+  );
+}
+*/
