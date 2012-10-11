@@ -1,6 +1,6 @@
 #block-gamification-badge-gamification {
-  background: url("images/vintage-sign-150.png") no-repeat center top;
-  padding-top: 160px;
+  background: url('./images/gamification-badge-150.png') no-repeat center 15px;
+  padding-top: 135px;
 }
 
 .page-badge-gamification-quest-3 .vertical-tabs {
