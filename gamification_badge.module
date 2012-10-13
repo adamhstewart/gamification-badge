@@ -102,14 +102,8 @@ function gamification_badge_page() {
         quests. Each quest will take approximately 10 minutes to complete.
         They each contain an instructional video, a quizette, and a challenge.
         When you have achieved all 3 quests, you will have the opportunity to
-        solve the problem of practice and earn your badge.') . '</p>',
+        answer the question and earn your badge.') . '</p>',
     ),
-    'embedded_video' => array(
-      '#type' => 'markup',
-      '#markup' =>'<iframe width="560" height="315"
-      src="http://www.youtube.com/embed/dE1DuBesGYM"
-      frameborder="0" allowfullscreen></iframe>'
-    ),    
   'quest_list' => array(
       '#items' => array(
         l('QUEST 1: Games are everywhere', 'badge/gamification/quest-1'),
@@ -157,7 +151,7 @@ function gamification_badge_quest1_page() {
     ),
     'header_text' => array(
       '#type' => 'markup',
-      '#markup' => '<p>' . t('Watch this video and answer the questions
+      '#markup' => '<p>' . t('Watch this video and complete the quizette
         below.') . '</p>',
     ),
     'embedded_video' => array(
@@ -194,7 +188,7 @@ function gamification_badge_quest2_page() {
     ),
     'header_text' => array(
       '#type' => 'markup',
-      '#markup' => '<p>' . t('Watch this video and answer the questions
+      '#markup' => '<p>' . t('Watch this video and complete the quizette
         below.') . '</p>',
     ),
     'embedded_video' => array(
@@ -240,7 +234,7 @@ function gamification_badge_quest3_page() {
     ),
     'header_text' => array(
       '#type' => 'markup',
-      '#markup' => '<p>' . t('Watch this video and answer the questions
+      '#markup' => '<p>' . t('Watch this video and complete the quizette 
         below.') . '</p>',
     ),
     'embedded_video' => array(
@@ -291,12 +285,6 @@ function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
     );
     $form['title']['#weight'] = '29';
     $form['actions']['submit']['#submit'][] = 'gamification_badge_resource_node_form_finish_redirect';
-    
-  // reorder the elements in the form to include the elements being inserted
-	//$order = array('question1', 'explanation-text', 'title', 'body', 'feild-resourve', 'submit');
-	//foreach($order as $key => $field) {
-	//$form[$field]['#weight'] = $key;
-	//}
     
   }
 }
@@ -399,8 +387,9 @@ function gamification_badge_quest2_form($form, $form_state) {
     
   $form['question-2'] = array(
     '#type' => 'textarea',
-    '#title' => t('Challenge: What questions does this explanation raise for
-      you? Pose at least 1 question to our expert. '),
+    '#title' => t('Challenge: What questions does the explanation of
+      gamification presented in the video raise for you? Pose at
+      least 1 question to our expert.'),
     '#description' => t('Your question will be answered by one of our
       gamification experts'),
     '#required' => TRUE,
