@@ -61,3 +61,22 @@
     filter: dropshadow(color=#000, offx=1, offy=1);
     line-height: 20px;
 }
+
+.page-badge-gamification .content ul.quest-list {
+  list-style-type: none;
+}
+
+.page-badge-gamification .content ul.quest-list li a {
+  text-decoration: none;
+  font-family: "Helvetic Neue";
+  font-size: 1.5em;
+  padding: .2em 0 .2em 80px;
+}
+
+.page-badge-gamification .content ul.quest-list li.quest-unachieved a {
+  background: url('./images/start-button.png') no-repeat 0 0;
+}
+
+.page-badge-gamification .content ul.quest-list li.quest-achieved a {
+  background: url('./images/unlocked-button.png') no-repeat 0 0;
+}

@@ -91,7 +91,16 @@ function gamification_badge_menu() {
  * Creating the page(s) content.
  */
 
-function gamification_badge_page() {   
+function gamification_badge_page() {
+  global $user;
+  
+  achievements_unlocked_already('quest-1', $user->uid) ? 
+    $quest1_status = 'quest-achieved': $quest1_status = 'quest-unachieved';
+  achievements_unlocked_already('quest-2', $user->uid) ? 
+    $quest2_status = 'quest-achieved': $quest2_status = 'quest-unachieved';
+  achievements_unlocked_already('quest-3', $user->uid) ? 
+    $quest3_status = 'quest-achieved': $quest3_status = 'quest-unachieved'; 
+  
   $output =  array(
     'introduction' => array(
       '#type' => 'markup',
@@ -104,7 +113,19 @@ function gamification_badge_page() {
         When you have achieved all 3 quests, you will have the opportunity to
         answer the question and earn your badge.') . '</p>',
     ),
-  'quest_list' => array(
+    'quest_list' => array(
+      '#type' => 'markup',
+      '#markup' => '<ul class = "quest-list">
+        <li class = "' . $quest1_status .'">' .
+          l('QUEST 1: Games are everywhere', 'badge/gamification/quest-1') . '</li>
+        <li class = "' . $quest2_status .'">' .
+          l('QUEST 2: Gamification defined', 'badge/gamification/quest-2') . '</li>
+        <li class = "' . $quest3_status .'">' .
+          l('QUEST 3: Games in practice', 'badge/gamification/quest-3') . '</li>
+        </ul>',
+    )
+/* This aint working
+ * 'quest_list' => array(
       '#items' => array(
         l('QUEST 1: Games are everywhere', 'badge/gamification/quest-1'),
         l('QUEST 2: Gamification defined', 'badge/gamification/quest-2'),
@@ -115,6 +136,7 @@ function gamification_badge_page() {
         ),
       '#theme' => 'item_list',
     ),
+*/
 
 /* TODO    
     'quest_list' => array(
