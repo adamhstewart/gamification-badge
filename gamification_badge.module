@@ -8,6 +8,12 @@ function gamification_badge_achievements_info() {
     'gamification-badge' => array(
       'title' => t('Gamification Badge'),
       'achievements' => array(
+        'join' => array(
+         'title' => t('Joined Gamification Badge Group'),
+         'description' => t("Beginning the badge"),
+         'storage' => 'gamification-badge',
+         'points' => 10,
+        ),
         'quest-1' => array(
          'title' => t('Gamification Badge: Quest #1'),
          'description' => t("Games are Everywhere"),
@@ -30,7 +36,7 @@ function gamification_badge_achievements_info() {
           'title' => t('Gamification Badge'),
           'description' => t('All Quests Complete'),
           'storage' => 'gamification-badge',
-          'points' => 30,
+          'points' => 10,
         )
       ),
     ),
@@ -41,12 +47,27 @@ function gamification_badge_achievements_info() {
 /**
 * Create Rules Event().
 */
-
-
 function gamification_badge_achievements_unlocked($achievement, $uid) {
   if ($uid != 0) {
     $title = $achievement['title'];
     rules_invoke_event('achievements_unlocked_event', $title, $uid);
+  }
+}
+
+/**
+* Create Achievement on OG Membership.
+*/
+function gamification_badge_og_membership_insert($membership) {
+  if ($membership->entity_type == 'user') {
+    global $user;
+    
+    if (!achievements_unlocked_already('join', $user->uid)) {
+    //assign the badge-specific points
+    $current_count = achievements_storage_get('gamification-badge', $user->uid) + 10;
+    achievements_storage_set('gamification-badge', $current_count, $user->uid);
+    
+    achievements_unlocked('join', $user->uid); //unlock the achivement
+    }
   }
 }
 
@@ -82,6 +103,12 @@ function gamification_badge_menu() {
       'page callback' => 'gamification_badge_quest3_page',
       'access callback' => TRUE,
     ),
+    'badge/gamification/quest-final' => array(
+      'title' => 'Earn the Gamification Badge',
+      'description' => 'Page for Final Gamification Page Quest.',
+      'page callback' => 'gamification_badge_questfinal_page',
+      'access callback' => TRUE,
+    ),    
   );
   
   return $items;
@@ -94,12 +121,27 @@ function gamification_badge_menu() {
 function gamification_badge_page() {
   global $user;
   
+  if (og_is_member('1')) {
+  
   achievements_unlocked_already('quest-1', $user->uid) ? 
     $quest1_status = 'quest-achieved': $quest1_status = 'quest-unachieved';
   achievements_unlocked_already('quest-2', $user->uid) ? 
     $quest2_status = 'quest-achieved': $quest2_status = 'quest-unachieved';
   achievements_unlocked_already('quest-3', $user->uid) ? 
-    $quest3_status = 'quest-achieved': $quest3_status = 'quest-unachieved'; 
+    $quest3_status = 'quest-achieved': $quest3_status = 'quest-unachieved';
+  achievements_unlocked_already('badge', $user->uid) ? 
+    $questfinal_status = 'quest-achieved': $questfinal_status = 'quest-unachieved';
+    
+  if (achievements_unlocked_already('quest-1', $user->uid) &&
+      achievements_unlocked_already('quest-2', $user->uid) &&
+      achievements_unlocked_already('quest-3', $user->uid)) {
+        $final_quest_status_message = '<ul class = "quest-list">
+        <li class = "' . $questfinal_status .'">' .
+          l('Complete the final quest to unlock the badge', 'badge/gamification/quest-final') . '</li></ul>';
+  }
+  else {
+    $final_quest_status_message = '<p>When you complete all three quests, you will take a final step to unlock the badge.</p>';
+  }
   
   $output =  array(
     'introduction' => array(
@@ -123,7 +165,11 @@ function gamification_badge_page() {
         <li class = "' . $quest3_status .'">' .
           l('QUEST 3: Games in practice', 'badge/gamification/quest-3') . '</li>
         </ul>',
-    )
+    ),
+    'final_quest' => array (
+      '#type' => 'markup',
+      '#markup' => $final_quest_status_message,
+      ),
 /* This aint working
  * 'quest_list' => array(
       '#items' => array(
@@ -150,8 +196,26 @@ function gamification_badge_page() {
       */
   );
     
+  }
+  else {
+    $output =  array(
+    'introduction' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . t('In order to start this badge, you need to join the
+        Gamification Badge Participants Group. There you will find other group
+        members who are participating in, or have completed the Gamification Badge.') . '</p>
+        <p>' . t('After you have joined the group, come back here to start your badge!') . '</p>'
+      ),
+    'group_button' => array(
+      '#type' => 'markup',
+      '#markup' => '<div class="group-button">' . l(t('Go to the Gamification
+        Badge Group >>'), 'groups/gamification-badge-participants') . '</div>'
+      ),
+    );
+  }
   return $output;
 }
+
 
 
 function gamification_badge_quest1_page() {
@@ -271,10 +335,10 @@ function gamification_badge_quest3_page() {
   return $build;
 }
 
+
 /**
  * Implementation of hook_form_alter()
  */
-
 
 function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'resource_node_form' && current_path() == 'badge/gamification/quest-3'){
@@ -309,6 +373,11 @@ function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
     $form['actions']['submit']['#submit'][] = 'gamification_badge_resource_node_form_finish_redirect';
     
   }
+  if ($form_id == 'discussion_topic_node_form' && current_path() == 'badge/gamification/quest-final'){
+    $form['actions']['submit']['#submit'][] = 'gamification_badge_discussion_topic_node_form_finish_redirect';
+    $form['actions']['submit']['#submit'][] = 'gamification_badge_discussion_topic_node_presave';
+
+  }
 }
 
 function gamification_badge_resource_node_form_finish_redirect($form, &$form_state) {
@@ -323,13 +392,73 @@ function gamification_badge_resource_node_form_finish_redirect($form, &$form_sta
     
     achievements_unlocked('quest-3', $user->uid); //unlock the achivement
     
-    //check if the storage is at 30 and unlock the badge
+    /* Not going to do this anymore
+     * //check if the storage is at 30 and unlock the badge
     if (achievements_storage_get('gamification-badge', $user->uid) == 30) {
       achievements_unlocked('badge', $user->uid); //unlock the achivement
-    }    
+    }
+    */
   }
   $form_state['redirect'] = 'badge/gamification';
-  } 
+  }
+
+function gamification_badge_discussion_topic_node_presave($node) {
+  $node->group_audience['und'][0]['gid'] = '1';
+}
+
+function gamification_badge_questfinal_page() {
+  
+  module_load_include('inc', 'node', 'node.pages');
+  
+  global $user;
+  $node = (object) array(
+    'uid' => $user->uid,
+    'name' => (isset($user->name) ? $user->name : ''),
+    'type' => 'discussion_topic',
+    'language' => LANGUAGE_NONE,
+  );
+ 
+  $build = array(
+    //display message if quest is already unlocked
+    'display_message' => array (
+      '#type' => 'markup',
+      '#markup' => achievements_unlocked_already('badge', $user->uid) ?
+        '<div class ="messages warning">' . t('You have already completed this quest.
+          You may visit the quest again, but your answers will not count toward the
+          badge') . '</div>':NULL,
+    ),
+    'header_text' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . t('To answer the question, "How can I use
+        gamification to engage people in my organization?" and thus earn
+        your badge, think of at least 1 example of how you might use an
+        aspect of gamification to engage the stakeholders in your
+        organization. Write a short paragraph as a response and upload it
+        below. Your response will be added to the Gamification Badge
+        Participant Group Discussion Board') . '</p>',
+    ),
+    'display_form' => drupal_get_form('discussion_topic_node_form', $node),
+  );
+  dpm($node);
+  return $build;
+}
+
+
+function gamification_badge_discussion_topic_node_form_finish_redirect($form, &$form_state) {
+  global $user;
+  
+  //even though acheivement_unlocks checks, we need to check so that
+  //storage is not invoked
+  if (!achievements_unlocked_already('badge', $user->uid)) {
+    //assign the badge-specific points
+    $current_count = achievements_storage_get('gamification-badge', $user->uid) + 10;
+    achievements_storage_set('gamification-badge', $current_count, $user->uid);    
+    achievements_unlocked('badge', $user->uid); //unlock the achivement
+  }
+
+  $form_state['redirect'] = 'badge/gamification';
+}
+
 
 function gamification_badge_quest1_form($form, $form_state) {
   $form = array();
@@ -378,10 +507,12 @@ function gamification_badge_quest1_form_submit($form, &$form_state) {
     
     achievements_unlocked('quest-1', $user->uid); //unlock the achivement
     
+    /* Not going to do this anymore
     //check if the storage is at 30 and unlock the badge
     if (achievements_storage_get('gamification-badge', $user->uid) == 30) {
       achievements_unlocked('badge', $user->uid); //unlock the achivement
     }
+    */
   }
     
   $form_state['redirect'] = 'badge/gamification';
@@ -437,10 +568,12 @@ function gamification_badge_quest2_form_submit($form, &$form_state) {
     
     achievements_unlocked('quest-2', $user->uid); //unlock the achivement
     
+    /* Not going to do this anymore
     //check if the storage is at 30 and unlock the badge
     if (achievements_storage_get('gamification-badge', $user->uid) == 30) {
       achievements_unlocked('badge', $user->uid); //unlock the achivement
     }
+    */
   }
     
   $form_state['redirect'] = 'badge/gamification';
@@ -460,7 +593,6 @@ function gamification_badge_block_info() {
   return $blocks;
 }
 
-
 /**
  * Implementation of hook_block_view()
  */
@@ -478,7 +610,7 @@ function gamification_badge_block_view($delta = '') {
         'points' => $storage,
         'size' => '175',
         'unit' => 'Points',
-        'max_points' => '30',
+        'max_points' => '50',
         'unit_divisor' => '1',
         )
       );
@@ -542,3 +674,24 @@ function theme_gamification_badge_progress_content($variables) {
   return $output;
 }
 
+/**
+ * Implements hook_user_view().
+ */
+function gamification_badge_user_view($account, $view_mode) {
+  // @TODO: Really need to set a separate module that allows displaying badges, then have this module call it.
+  $account->content['my_badges'] = array(
+    '#title' => t('My Badges'),
+    '#type' => 'user_profile_category',
+    '#attributes' => array('class' => array('badges')),
+    'weight' => '-5',
+  );
+  
+  if (achievements_unlocked_already('badge', $account->uid)) {
+    $account->content['my_badges']['badges'] = array(
+        '#type' => 'user_profile_item',
+        '#title' => '',
+        '#markup' => '<img src = "../' . drupal_get_path('module','gamification_badge') . '/images/gamification-badge-150.png" />',
+        '#attributes' => array('class' => array('badges')),
+      );
+  }
+}
