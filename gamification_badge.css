@@ -3,11 +3,15 @@
   padding-top: 135px;
 }
 
-.page-badge-gamification-quest-3 .vertical-tabs {
+.page-badge-gamification .vertical-tabs {
 	display: none;
 }
 
-.page-badge-gamification-quest-3 #edit-body-und-0-format {
+.page-badge-gamification #edit-body-und-0-format {
+	display: none;
+}
+
+.page-badge-gamification #edit-group-audience {
 	display: none;
 }
 

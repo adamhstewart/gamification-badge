@@ -28,7 +28,7 @@ function gamification_badge_achievements_info() {
         ),
         'quest-3' => array(
           'title' => t('Gamification Badge: Quest #3'),
-          'description' => t('Games in Parctice'),
+          'description' => t('Games in Practice'),
           'storage' => 'gamification-badge',
           'points' => 10,
         ),
@@ -370,13 +370,17 @@ function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
       '#weight' => '25',
     );
     $form['title']['#weight'] = '29';
+    unset($form['actions']['preview']);
+    $form['actions']['submit']['#value'] = 'Add Your Resource';
     $form['actions']['submit']['#submit'][] = 'gamification_badge_resource_node_form_finish_redirect';
     
   }
   if ($form_id == 'discussion_topic_node_form' && current_path() == 'badge/gamification/quest-final'){
+    $form['group_audience']['und']['#default_value'] = '1';
+    unset($form['actions']['preview']);
+    $form['actions']['submit']['#value'] = 'Add to the Discussion';
     $form['actions']['submit']['#submit'][] = 'gamification_badge_discussion_topic_node_form_finish_redirect';
-    $form['actions']['submit']['#submit'][] = 'gamification_badge_discussion_topic_node_presave';
-
+    //$form['actions']['submit']['#submit'][] = 'gamification_badge_discussion_topic_node_presave';
   }
 }
 
@@ -403,7 +407,7 @@ function gamification_badge_resource_node_form_finish_redirect($form, &$form_sta
   }
 
 function gamification_badge_discussion_topic_node_presave($node) {
-  $node->group_audience['und'][0]['gid'] = '1';
+  $node->group_audience['gid'] = '1';
 }
 
 function gamification_badge_questfinal_page() {
@@ -439,7 +443,6 @@ function gamification_badge_questfinal_page() {
     ),
     'display_form' => drupal_get_form('discussion_topic_node_form', $node),
   );
-  dpm($node);
   return $build;
 }
 
@@ -455,7 +458,6 @@ function gamification_badge_discussion_topic_node_form_finish_redirect($form, &$
     achievements_storage_set('gamification-badge', $current_count, $user->uid);    
     achievements_unlocked('badge', $user->uid); //unlock the achivement
   }
-
   $form_state['redirect'] = 'badge/gamification';
 }
 
