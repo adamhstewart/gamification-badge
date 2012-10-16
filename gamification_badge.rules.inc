@@ -1,4 +1,9 @@
 <?php
+/**
+ * @file
+ * Provides Rules for the Gamification Badge Module
+ *
+ */
 
 function gamification_badge_rules_event_info() {
   return array(

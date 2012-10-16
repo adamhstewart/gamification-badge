@@ -1,5 +1,13 @@
 <?php
+/**
+ * @file
+ * Gamification Badge Module.
+ *
+ * This module extends teh achievements module and provides a badge that exemplifies
+ * some gamification principles.
+ */
 
+ 
 /**
  * Implements hook_achievements_info().
  */
@@ -75,7 +83,7 @@ function gamification_badge_og_membership_insert($membership) {
  * Implements hook_menu().
  */
 function gamification_badge_menu() {
-   $items = array (
+   $items = array(
     'badge/gamification' => array(
       'title' => 'Gamification Badge',
       'description' => 'Page for Gamification Badge.',
@@ -148,7 +156,7 @@ function gamification_badge_quest1_form($form, $form_state) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Your Responses'),
-    '#prefix'=> '<div class="form-item form-submit">',
+    '#prefix' => '<div class="form-item form-submit">',
     '#suffix' => '</div>'
     );
 
@@ -244,7 +252,7 @@ function gamification_badge_quest2_form_submit($form, &$form_state) {
  */
 
 function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'resource_node_form' && current_path() == 'badge/gamification/quest-3'){
+  if ($form_id == 'resource_node_form' && current_path() == 'badge/gamification/quest-3') {
     
     $form['question-1'] = array(
       '#type' => 'radios',
@@ -267,8 +275,8 @@ function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
         principles are being applied in another organization. Describe how
         they are using it in a sentence or two. If possible, include a link
         to the website so we can all see it in action!') . '</p>
-        <p>' . t('Your response will be submitted to the ') .
-          '<a href="/resource-library">' . t('Resource Library') .
+        <p>' . t('Your response will be submitted to the') .
+          '<a href="/resource-library"> ' . t('Resource Library') .
           '</a>' . t('.') . '</p>',
       '#weight' => '25',
     );
@@ -278,7 +286,7 @@ function gamification_badge_form_alter(&$form, &$form_state, $form_id) {
     $form['actions']['submit']['#submit'][] = 'gamification_badge_resource_node_form_finish_redirect';
     
   }
-  if ($form_id == 'discussion_topic_node_form' && current_path() == 'badge/gamification/quest-final'){
+  if ($form_id == 'discussion_topic_node_form' && current_path() == 'badge/gamification/quest-final') {
     $form['group_audience']['und']['#default_value'] = '1';
     unset($form['actions']['preview']);
     $form['actions']['submit']['#value'] = 'Add to the Discussion';
@@ -434,7 +442,7 @@ function gamification_badge_user_view($account, $view_mode) {
     $account->content['my_badges']['badges'] = array(
         '#type' => 'user_profile_item',
         '#title' => '',
-        '#markup' => '<img src = "../' . drupal_get_path('module','gamification_badge') . '/images/gamification-badge-150.png" />',
+        '#markup' => '<img src = "../' . drupal_get_path('module', 'gamification_badge') . '/images/gamification-badge-150.png" />',
         '#attributes' => array('class' => array('badges')),
       );
   }

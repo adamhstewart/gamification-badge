@@ -1,7 +1,8 @@
 <?php
-
 /**
- * Creating the page(s) content.
+ * @file
+ * Pages for the Gamification Badge Module
+ *
  */
 
 function gamification_badge_page() {
@@ -22,8 +23,8 @@ function gamification_badge_page() {
       achievements_unlocked_already('quest-2', $user->uid) &&
       achievements_unlocked_already('quest-3', $user->uid)) {
         $final_quest_status_message = '<ul class = "quest-list">
-        <li class = "' . $questfinal_status .'">' .
-          l('Apply what you have learned so far to answer the question and earn your badge.', 'badge/gamification/quest-final') . '</li></ul>';
+        <li class = "' . $questfinal_status . '">' .
+          l(t('Apply what you have learned so far to answer the question and earn your badge.'), 'badge/gamification/quest-final') . '</li></ul>';
   }
   else {
     $final_quest_status_message = '<p>When you complete all three quests, you will take a final step to earn your badge.</p>';
@@ -44,15 +45,15 @@ function gamification_badge_page() {
     'quest_list' => array(
       '#type' => 'markup',
       '#markup' => '<ul class = "quest-list">
-        <li class = "' . $quest1_status .'">' .
-          l('QUEST 1: Games are everywhere', 'badge/gamification/quest-1') . '</li>
-        <li class = "' . $quest2_status .'">' .
-          l('QUEST 2: Gamification defined', 'badge/gamification/quest-2') . '</li>
-        <li class = "' . $quest3_status .'">' .
-          l('QUEST 3: Games in practice', 'badge/gamification/quest-3') . '</li>
+        <li class = "' . $quest1_status . '">' .
+          l(t('QUEST 1: Games are everywhere'), 'badge/gamification/quest-1') . '</li>
+        <li class = "' . $quest2_status . '">' .
+          l(t('QUEST 2: Gamification defined'), 'badge/gamification/quest-2') . '</li>
+        <li class = "' . $quest3_status . '">' .
+          l(t('QUEST 3: Games in practice'), 'badge/gamification/quest-3') . '</li>
         </ul>',
     ),
-    'final_quest' => array (
+    'final_quest' => array(
       '#type' => 'markup',
       '#markup' => $final_quest_status_message,
       ),
@@ -114,7 +115,7 @@ function gamification_badge_quest1_page() {
     ),
 
     //display message if quest is already unlocked
-    'display_message' => array (
+    'display_message' => array(
       '#type' => 'markup',
       '#markup' => achievements_unlocked_already('quest-1', $user->uid) ?
         '<div class ="messages warning">' . t('You have already completed this quest.
@@ -128,18 +129,18 @@ function gamification_badge_quest1_page() {
     ),
     'embedded_video' => array(
       '#type' => 'markup',
-      '#markup' =>'<iframe width="560" height="315"
+      '#markup' => '<iframe width="560" height="315"
         src="http://www.youtube.com/embed/1AJpKt6UP08?rel=0"
         frameborder="0" allowfullscreen></iframe>'
     ),  
-    'display_form' => array (
+    'display_form' => array(
       drupal_get_form('gamification_badge_quest1_form'),
       'file' => 'gamification_badge.forms.inc',    
     ),
     'link_back' => array(
       '#type' => 'markup',
-      '#markup' => l('Return to the badge page without answering the
-        questions.', '../badge/gamification'),
+      '#markup' => l(t('Return to the badge page without answering the
+        questions.'), '../badge/gamification'),
     ),
   );
      return $build;
@@ -154,7 +155,7 @@ function gamification_badge_quest2_page() {
       '#markup' => '<h2 class="quest-subtitle">' . t('Gamification Defined') . '</h2>',
     ),
     //display message if quest is already unlocked
-    'display_message' => array (
+    'display_message' => array(
       '#type' => 'markup',
       '#markup' => achievements_unlocked_already('quest-2', $user->uid) ?
         '<div class ="messages warning">' . t('You have already completed this quest.
@@ -168,15 +169,15 @@ function gamification_badge_quest2_page() {
     ),
     'embedded_video' => array(
       '#type' => 'markup',
-      '#markup' =>'<iframe width="640" height="360"
+      '#markup' => '<iframe width="640" height="360"
         src="http://www.youtube.com/embed/1dLK9MW-9sY?rel=0"
         frameborder="0" allowfullscreen></iframe>'
     ), 
     'display_form' => drupal_get_form('gamification_badge_quest2_form'),
     'link_back' => array(
       '#type' => 'markup',
-      '#markup' => l('Return to the badge page without answering the
-        questions.', '../badge/gamification'),
+      '#markup' => l(t('Return to the badge page without answering the
+        questions.'), '../badge/gamification'),
     ),
   );
      return $build;
@@ -200,7 +201,7 @@ function gamification_badge_quest3_page() {
       '#markup' => '<h2 class="quest-subtitle">' . t('Games in practice') . '</h2>',
     ),
     //display message if quest is already unlocked
-    'display_message' => array (
+    'display_message' => array(
       '#type' => 'markup',
       '#markup' => achievements_unlocked_already('quest-3', $user->uid) ?
         '<div class ="messages warning">' . t('You have already completed this quest.
@@ -214,7 +215,7 @@ function gamification_badge_quest3_page() {
     ),
     'embedded_video' => array(
       '#type' => 'markup',
-      '#markup' =>'<iframe width="640" height="360"
+      '#markup' => '<iframe width="640" height="360"
         src="http://www.youtube.com/embed/nIP4WLROQ50?rel=0"
         frameborder="0" allowfullscreen></iframe>'
     ), 
@@ -238,7 +239,7 @@ function gamification_badge_questfinal_page() {
  
   $build = array(
     //display message if quest is already unlocked
-    'display_message' => array (
+    'display_message' => array(
       '#type' => 'markup',
       '#markup' => achievements_unlocked_already('badge', $user->uid) ?
         '<div class ="messages warning">' . t('You have already completed this quest.
