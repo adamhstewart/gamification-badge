@@ -1,6 +1,9 @@
 name = Gamification Badge
 description = "Achievements badge for Gamification."
-files[] = gamification_badges.rules.inc
+stylesheets[all][] = gamification_badge.css
+files[] = gamification_badge.pages.inc
+dependencies[] = achievements
+dependencies[] = og
 package = Achievements
 core = 7.x
 
