@@ -137,10 +137,10 @@ function gamification_badge_page() {
       achievements_unlocked_already('quest-3', $user->uid)) {
         $final_quest_status_message = '<ul class = "quest-list">
         <li class = "' . $questfinal_status .'">' .
-          l('Complete the final quest to unlock the badge', 'badge/gamification/quest-final') . '</li></ul>';
+          l('Apply what you have learned so far to answer the question and earn your badge.', 'badge/gamification/quest-final') . '</li></ul>';
   }
   else {
-    $final_quest_status_message = '<p>When you complete all three quests, you will take a final step to unlock the badge.</p>';
+    $final_quest_status_message = '<p>When you complete all three quests, you will take a final step to earn your badge.</p>';
   }
   
   $output =  array(
