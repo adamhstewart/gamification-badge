@@ -106,7 +106,16 @@ function gamification_badge_page() {
 
 
 function gamification_badge_quest1_page() {
+  
+  module_load_include('inc', 'node', 'node.pages');
+
   global $user;
+  $node = (object) array(
+  'uid' => $user->uid,
+  'name' => (isset($user->name) ? $user->name : ''),
+  'type' => 'discussion_topic',
+  'language' => LANGUAGE_NONE,
+  );
   
   $build = array(
     'subhead' => array(
@@ -133,10 +142,7 @@ function gamification_badge_quest1_page() {
         src="http://www.youtube.com/embed/1AJpKt6UP08?rel=0"
         frameborder="0" allowfullscreen></iframe>'
     ),  
-    'display_form' => array(
-      drupal_get_form('gamification_badge_quest1_form'),
-      'file' => 'gamification_badge.forms.inc',    
-    ),
+    'display_form' => drupal_get_form('discussion_topic_node_form', $node),
     'link_back' => array(
       '#type' => 'markup',
       '#markup' => l(t('Return to the badge page without answering the
@@ -220,6 +226,11 @@ function gamification_badge_quest3_page() {
         frameborder="0" allowfullscreen></iframe>'
     ), 
     'display_form' => drupal_get_form('resource_node_form', $node),
+    'link_back' => array(
+      '#type' => 'markup',
+      '#markup' => l(t('Return to the badge page without answering the
+        questions.'), '../badge/gamification'),
+    ),
   );
 
   return $build;
@@ -257,6 +268,11 @@ function gamification_badge_questfinal_page() {
         Participant Group Discussion Board') . '</p>',
     ),
     'display_form' => drupal_get_form('discussion_topic_node_form', $node),
+    'link_back' => array(
+      '#type' => 'markup',
+      '#markup' => l(t('Return to the badge page without answering the
+        questions.'), '../badge/gamification'),
+    ),
   );
   return $build;
 }
